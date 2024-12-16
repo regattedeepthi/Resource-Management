@@ -85,8 +85,24 @@ class MaterialView(APIView):
 class ProjectView(APIView):
     def get(self, request):
         projects = Project.objects.all()
-        serializer = ProjectSerializer(projects, many=True)
-        return Response(serializer.data)
+        #serializer = ProjectSerializer(projects, many=True)
+        #return Response(serializer.data)
+        data=[]
+        for project in projects:
+            labour_ids=project.labour_ids.split(',')
+            material_ids=project.material_id.split(',')
+            material_quantities=project.material_quantity.split(',')
+            equipment_ids=project.equipment_id.split(',')
+            equipment_quantities=project.equipment_quantity.split(',')
+            data.append({
+               "labour_ids":labour_ids,
+               "material_ids":material_ids,
+                "material_quantities":material_quantities,
+                "equipment_ids":equipment_ids,
+                "equipment_quantities":equipment_quantities})
+            return Response(data)
+
+
     def post(self, request):
         serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():
@@ -152,14 +168,5 @@ class ProjectView(APIView):
                   equipment.save()
                 else:
                     return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
-                
-                """return Response(serializer.data)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-   def get(self,request,pk):
-        projects=Project.objects.get(pk=pk)
-        serializer=ProjectSerializer(projects)
-        return Response(serializer.data"""
-        
-        
-        
+             
     
